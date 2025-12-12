@@ -219,10 +219,13 @@ fi
 ###############################################################################
 echo ">>> 安装 oh-my-zsh"
 
-export RUNZSH=no
-export CHSH=no
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ ! -d "/root/.oh-my-zsh" ]; then
+    export RUNZSH=no
+    export CHSH=no
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+    echo "✔ oh-my-zsh 已存在，跳过安装"
+fi
 
 chsh -s /usr/bin/zsh root
 
