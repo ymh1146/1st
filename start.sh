@@ -102,7 +102,15 @@ sed -i "s/^Port.*/Port ${SSH_PORT}/" $SSH_CONFIG
 sed -i "s/^#PasswordAuthentication.*/PasswordAuthentication yes/" $SSH_CONFIG
 sed -i "s/^PasswordAuthentication.*/PasswordAuthentication yes/" $SSH_CONFIG
 
-systemctl restart sshd || {
+if systemctl list-unit-files | grep -q "^sshd.service"; then
+    SSH_SERVICE="sshd"
+else
+    SSH_SERVICE="ssh"
+fi
+echo "Detected SSH service name: $SSH_SERVICE"
+
+
+systemctl restart $SSH_SERVICE || {
     echo "❌ SSH 重启失败，恢复原配置"
     mv ${SSH_CONFIG}.bak $SSH_CONFIG
     exit 1
