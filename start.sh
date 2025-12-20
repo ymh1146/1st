@@ -28,12 +28,16 @@ echo "系统识别为: $OS"
 ###############################################################################
 echo ">>> 检查网络环境..."
 if ! ping -4 -c 1 -W 3 1.1.1.1 >/dev/null 2>&1; then
-    echo "⚠️  未检测到 IPv4 → 启用 DNS64"
+    echo "⚠️ 未检测到 IPv4 → 启用公共 NAT64 网关"
+    chattr -i /etc/resolv.conf 2>/dev/null || true
     cat > /etc/resolv.conf <<EOF
-nameserver 2606:4700:4700::64
+nameserver 2001:67c:2b0::4
 nameserver 2001:67c:27e4::64
+nameserver 2606:4700:4700::64
 EOF
-    echo "✔ 已启用 Cloudflare DNS64"
+    # 临时锁定，防止被 systemd-resolved 覆盖
+    chattr +i /etc/resolv.conf
+    echo "✔ 已启用公共 NAT64 DNS"
     IS_IPV6_ONLY=true
 else
     echo "✔ IPv4 可用"
