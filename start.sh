@@ -37,6 +37,7 @@ if ! ping -4 -c 1 -W 3 1.1.1.1 >/dev/null 2>&1; then
     chattr -i /etc/resolv.conf 2>/dev/null || true
     
     cat > /etc/resolv.conf <<EOF
+nameserver 2001:4860:4860::6464
 nameserver 2001:67c:2b0::4
 nameserver 2001:67c:2b0::6
 nameserver 2606:4700:4700::64
