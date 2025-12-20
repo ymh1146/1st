@@ -192,11 +192,6 @@ else
 fi
 chsh -s /usr/bin/zsh root 2>/dev/null || true
 
-###############################################################################
-# 解锁 resolv.conf 并输出信息
-###############################################################################
-chattr -i /etc/resolv.conf || true
-
 IP=$(curl -6 -s ifconfig.me || echo "未知IPv6")
 
 echo ""
