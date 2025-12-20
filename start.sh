@@ -86,11 +86,37 @@ timedatectl set-timezone Asia/Shanghai
 ###############################################################################
 echo ">>> 配置镜像源 & 安装软件"
 if [[ "$OS" == "ubuntu" || "$OS" == "debian" ]]; then
+    cp /etc/apt/sources.list /etc/apt/sources.list.bak 2>/dev/null || true
+    CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+    
+    # 使用清华大学镜像源
+    # 如果是 IPv6-only，建议使用专属域名 mirrors6.tuna.tsinghua.edu.cn
+    SOURCE_DOMAIN="mirrors.tuna.tsinghua.edu.cn"
+    if [[ "$IS_IPV6_ONLY" == "true" ]]; then
+        SOURCE_DOMAIN="mirrors6.tuna.tsinghua.edu.cn"
+    fi
+
+    echo ">>> 正在切换至清华大学源: $SOURCE_DOMAIN"
+    
+    if [[ "$OS" == "debian" ]]; then
+        cat > /etc/apt/sources.list <<EOF
+deb http://$SOURCE_DOMAIN/debian/ ${CODENAME} main contrib non-free non-free-firmware
+deb http://$SOURCE_DOMAIN/debian/ ${CODENAME}-updates main contrib non-free non-free-firmware
+deb http://$SOURCE_DOMAIN/debian-security/ ${CODENAME}-security main contrib non-free-firmware
+EOF
+    else
+        cat > /etc/apt/sources.list <<EOF
+deb http://$SOURCE_DOMAIN/ubuntu/ ${CODENAME} main restricted universe multiverse
+deb http://$SOURCE_DOMAIN/ubuntu/ ${CODENAME}-updates main restricted universe multiverse
+deb http://$SOURCE_DOMAIN/ubuntu/ ${CODENAME}-security main restricted universe multiverse
+EOF
+    fi
+
     apt update -y
-    apt install -y curl wget git ufw fail2ban htop zsh netcat-openbsd e2fsprogs
+    apt install -y curl wget git ufw fail2ban htop zsh netcat-openbsd e2fsprogs ndppd
 else
+    # CentOS 等其他系统逻辑...
     yum install -y epel-release
-    yum install -y curl wget git fail2ban htop zsh nc e2fsprogs
 fi
 
 ###############################################################################
